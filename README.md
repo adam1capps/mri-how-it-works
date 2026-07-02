@@ -47,8 +47,14 @@ remaining checklists is just filling in each step's `sections` and `fieldRule`.
 │   └── styles.css    # Dark anti-screenshot theme
 ├── js/
 │   └── gate.js       # Gate, watermark, deterrents, and the guide (STEPS data)
+├── netlify.toml      # Static deploy config + confidentiality headers
 └── README.md
 ```
+
+**Field-first design:** the guide is tuned for use on a roof — high-contrast text
+for sunlight, large glove-friendly checkboxes and tap targets, sticky "← Back +
+progress" wayfinding, a thumb-reachable "Next step" bar, and per-step / per-section
+/ overall progress that saves as you check items.
 
 No build step, no dependencies (one optional Google Fonts link). Open
 `index.html` directly, or host the folder.
@@ -59,9 +65,17 @@ No build step, no dependencies (one optional Google Fonts link). Open
 python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
-## Deploy
+## Deploy (Netlify)
 
-Any static host (Netlify, Cloudflare Pages, GitHub Pages, S3, …). No config.
+It's a static site with **no build step**, configured by `netlify.toml`
+(publish = repo root). In the Netlify UI:
+
+- **Base directory:** leave **empty** (the repo root). Do **not** put `main`
+  here — that's your Git *branch* (it goes in "Production branch"). A base of
+  `main` makes Netlify look in a nonexistent `main/` folder.
+- **Build command:** empty · **Publish directory:** `/` (or empty).
+
+Any other static host works too (Cloudflare Pages, GitHub Pages, S3, …).
 
 ---
 

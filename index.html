@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <title>Roof MRI&trade; Quick Reference Guide</title>
+  <meta name="description" content="Confidential field quick-reference guide for certified Roof MRI contractors performing non-destructive moisture surveys." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Anti-screenshot / anti-sharing identity watermark (JS-filled) -->
+  <div id="watermark" class="watermark" aria-hidden="true"></div>
+  <div id="blur-shield" class="blur-shield" aria-hidden="true">
+    <div class="blur-shield__msg">
+      <span class="blur-shield__lock">&#128274;</span>
+      <p>Content hidden while this window is not in focus.</p>
+      <span class="blur-shield__sub">Confidential &mdash; Roof MRI&trade;</span>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- GATE: Terms of Use & Disclaimer + name / email acknowledgement -->
+  <!-- Terms reproduced verbatim from the live page (design DAHNpCeV3-k) -->
+  <!-- ============================================================= -->
+  <main id="gate" class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+    <div class="gate__card">
+      <header class="gate__head">
+        <h1 id="gate-title" class="gate__title">Terms of Use &amp; Disclaimer</h1>
+        <p class="gate__subtitle">Please read completely before continuing</p>
+      </header>
+
+      <p class="gate__effective"><strong>Effective Date:</strong> <span class="accent-gold">June 2025</span></p>
+
+      <div class="terms" id="terms" tabindex="0">
+        <section class="terms__section">
+          <h2>1. Purpose</h2>
+          <p>
+            This Quick Reference Guide is provided to assist MRI Contractors in performing
+            non-destructive moisture surveys on commercial roofing systems. It is intended
+            as a procedural aid and does not replace formal training, certifications, or
+            professional judgment.
+          </p>
+        </section>
+
+        <section class="terms__section">
+          <h2>2. Limitations of Use</h2>
+          <ul>
+            <li>This guide is for reference purposes only.</li>
+            <li>Results of moisture surveys depend on proper equipment calibration, environmental conditions, and user technique.</li>
+            <li>Re-Dry, LLC does not guarantee the accuracy or completeness of any survey conducted using this guide.</li>
+          </ul>
+        </section>
+
+        <section class="terms__section">
+          <h2>3. No Warranty</h2>
+          <p>
+            This guide is provided &ldquo;as is&rdquo; without any warranties, express or
+            implied. Re-Dry, LLC disclaims all liability for errors, omissions, or outcomes
+            arising from the use of this guide.
+          </p>
+        </section>
+
+        <section class="terms__section">
+          <h2>4. Assumption of Risk</h2>
+          <p>
+            By using this guide, you acknowledge that rooftop work involves inherent risks.
+            You agree to follow all applicable safety protocols and assume full responsibility
+            for your actions while performing surveys.
+          </p>
+        </section>
+
+        <section class="terms__section">
+          <h2>5. Intellectual Property</h2>
+          <p>
+            All content within this guide is the property of Re-Dry, LLC and may not be
+            reproduced, distributed, or modified without prior written consent.
+          </p>
+        </section>
+
+        <section class="terms__section">
+          <h2>6. Modifications</h2>
+          <p>
+            Re-Dry, LLC reserves the right to update or modify this guide at any time without
+            notice.
+          </p>
+        </section>
+
+        <section class="terms__section">
+          <h2>7. Contact</h2>
+          <p>
+            For questions regarding this disclaimer, please contact Re-Dry, LLC at
+            <a href="mailto:info@re-dry.com">info@re-dry.com</a>.
+          </p>
+        </section>
+
+        <p class="terms__scrollhint" id="scrollhint">&#8595; Scroll to read all terms &#8595;</p>
+      </div>
+
+      <form id="gate-form" class="gate__form" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="full-name">Full name</label>
+          <input type="text" id="full-name" name="full-name" placeholder="e.g. Adam Capps" required />
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="e.g. adam@re-dry.com" required />
+        </div>
+        <label class="agree">
+          <input type="checkbox" id="agree" name="agree" required />
+          <span>I have read and agree to the Terms of Use &amp; Disclaimer.</span>
+        </label>
+        <p class="gate__error" id="gate-error" role="alert" hidden></p>
+        <button type="submit" class="btn btn--primary btn--block" id="gate-submit">Continue to Guide</button>
+        <p class="gate__fineprint">Your name and email are recorded with your acknowledgement and used to watermark this confidential material.</p>
+      </form>
+    </div>
+  </main>
+
+  <!-- ============================================================= -->
+  <!-- APP: Quick Reference Guide (revealed after acknowledgement)    -->
+  <!-- ============================================================= -->
+  <div id="app" class="app" hidden>
+    <header class="apphead">
+      <div class="brand">
+        <span class="brand__roof">ROOF</span><span class="brand__mri">MRI</span><span class="brand__tm">&trade;</span>
+      </div>
+      <div class="apphead__right">
+        <span class="badge badge--patent">&#9878;&#65039; U.S. Patent Approved</span>
+        <span class="tag tag--confidential">Confidential</span>
+      </div>
+    </header>
+
+    <!-- Landing view (step cards) -->
+    <section id="view-landing" class="view">
+      <div class="landing__head">
+        <h1 class="landing__title">Roof MRI Quick Reference Guide</h1>
+        <p class="landing__sub">Follow these steps to complete your moisture survey</p>
+        <p class="landing__welcome" id="welcome"></p>
+      </div>
+      <div class="steps" id="steps-list"><!-- step cards injected by JS --></div>
+      <p class="landing__progress" id="overall-progress" aria-live="polite"></p>
+    </section>
+
+    <!-- Step detail view (injected by JS) -->
+    <section id="view-step" class="view" hidden></section>
+
+    <footer class="footer">
+      <div class="brand brand--sm">
+        <span class="brand__roof">ROOF</span><span class="brand__mri">MRI</span><span class="brand__tm">&trade;</span>
+      </div>
+      <!-- OWNER: patent is approved but not yet issued; add the number here once it issues. -->
+      <p class="footer__patent">&#9878;&#65039; U.S. patent approved &middot; Re-Dry, LLC</p>
+      <p class="footer__legal">
+        Confidential &amp; proprietary to Re-Dry, LLC. Do not screenshot, copy, or share.
+        This page is identity-watermarked.
+      </p>
+      <p class="footer__copy">&copy; <span id="year"></span> Re-Dry, LLC. Roof MRI&trade; is a trademark of Re-Dry, LLC.</p>
+    </footer>
+  </div>
+
+  <script src="js/gate.js"></script>
+</body>
+</html>

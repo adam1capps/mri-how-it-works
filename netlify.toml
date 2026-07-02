@@ -6,6 +6,10 @@
 # (and it won't even find this file). Clear that field, then this config takes over.
 
 [build]
+  # base "." forces the repo root as the build base. This OVERRIDES any stray
+  # "Base directory" set in the Netlify UI (e.g. "main", a branch name) that
+  # would otherwise fail with: Base directory does not exist: /opt/build/repo/main
+  base = "."
   publish = "."
   command = ""
 

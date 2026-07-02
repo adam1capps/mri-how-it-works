@@ -1,0 +1,23 @@
+# Netlify configuration — Roof MRI Quick Reference Guide (static site, no build).
+#
+# IMPORTANT: In the Netlify UI, the "Base directory" must be EMPTY (the repo root).
+# "main" is your Git BRANCH — it belongs in "Production branch", NOT "Base directory".
+# A base directory of "main" makes Netlify look inside a nonexistent main/ folder
+# (and it won't even find this file). Clear that field, then this config takes over.
+
+[build]
+  # base "." forces the repo root as the build base. This OVERRIDES any stray
+  # "Base directory" set in the Netlify UI (e.g. "main", a branch name) that
+  # would otherwise fail with: Base directory does not exist: /opt/build/repo/main
+  base = "."
+  publish = "."
+  command = ""
+
+# Reinforce the confidential / anti-sharing intent at the edge.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
+    X-Content-Type-Options = "nosniff"

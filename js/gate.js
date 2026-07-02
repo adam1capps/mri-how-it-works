@@ -218,6 +218,19 @@
     return { total: total, done: done };
   }
 
+  // Pick a legible number colour for a given swatch background.
+  function textColorFor(hex) {
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var r = parseInt(h.substr(0, 2), 16), g = parseInt(h.substr(2, 2), 16), b = parseInt(h.substr(4, 2), 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#0a0e1a' : '#ffffff';
+  }
+  function sectionCounts(step, sec) {
+    var done = 0;
+    sec.items.forEach(function (_, i) { if (isChecked(step.n, sec.code, i)) done++; });
+    return { total: sec.items.length, done: done };
+  }
+
   /* ----------------------------------------------------------------------- */
   /* Render: landing                                                         */
   /* ----------------------------------------------------------------------- */
@@ -226,17 +239,26 @@
     STEPS.forEach(function (step) {
       var c = stepCounts(step);
       var pending = step.sections.length === 0;
+      var complete = !pending && c.done === c.total;
+      var pct = c.total ? Math.round(c.done / c.total * 100) : 0;
+      var cta = pending ? 'Coming soon' : (complete ? 'Done ✓ · Review' : (c.done > 0 ? 'Continue →' : 'Start →'));
       var btn = document.createElement('button');
-      btn.className = 'step' + (pending ? ' step--pending' : '');
+      btn.className = 'step' + (pending ? ' step--pending' : '') + (complete ? ' is-complete' : '');
       btn.setAttribute('data-step', String(step.n));
+      btn.setAttribute('aria-label', 'Step ' + step.n + ': ' + step.title + (pending ? '' : ' — ' + c.done + ' of ' + c.total + ' complete'));
       btn.innerHTML =
-        '<span class="step__swatch" style="background:' + step.color + '"></span>' +
+        '<span class="step__swatch" style="background:' + step.color + ';color:' + textColorFor(step.color) + '">' + step.n + '</span>' +
         '<span class="step__body">' +
-          '<span class="step__title"><span class="step__n">' + step.n + '</span><span class="step__bar">|</span>' + esc(step.title) + '</span>' +
+          '<span class="step__title">' + esc(step.title) + '</span>' +
           '<span class="step__desc">' + esc(step.desc) + '</span>' +
-          '<span class="step__cta">' + (pending ? 'Checklist coming soon' : 'Start Checklist →') + '</span>' +
+          (pending
+            ? '<span class="step__cta">' + cta + '</span>'
+            : '<span class="step__meta">' +
+                '<span class="step__minibar"><span class="step__minifill" style="width:' + pct + '%"></span></span>' +
+                '<span class="step__cta">' + cta + '</span>' +
+              '</span>') +
         '</span>' +
-        (pending ? '' : '<span class="step__prog">' + c.done + '/' + c.total + '</span>');
+        '<span class="step__chevron" aria-hidden="true">›</span>';
       btn.addEventListener('click', function () { showStep(step.n); });
       stepsList.appendChild(btn);
     });
@@ -246,7 +268,12 @@
   function updateOverall() {
     var total = 0, done = 0;
     STEPS.forEach(function (s) { var c = stepCounts(s); total += c.total; done += c.done; });
-    overallProgress.textContent = total ? (done + ' of ' + total + ' checklist items complete') : '';
+    var pct = total ? Math.round(done / total * 100) : 0;
+    var fill = document.getElementById('overall-fill');
+    if (fill) fill.style.width = pct + '%';
+    if (overallProgress) overallProgress.textContent = total ? (done + ' of ' + total + ' checks complete · ' + pct + '%') : '';
+    var banner = document.getElementById('done-banner');
+    if (banner) banner.hidden = !(total && done === total);
   }
 
   /* ----------------------------------------------------------------------- */
@@ -255,10 +282,17 @@
   function showStep(n) {
     var step = STEPS.filter(function (s) { return s.n === n; })[0];
     if (!step) return;
+    app.classList.add('is-step');
+    var c = stepCounts(step);
+
     var html =
-      '<button class="back" id="back-btn">← Back</button>' +
+      '<div class="stepbar">' +
+        '<button class="back" id="back-btn" aria-label="Back to overview">&#8592; Back</button>' +
+        '<span class="stepbar__title">' + esc(step.title) + '</span>' +
+        (step.sections.length ? '<span class="stepbar__prog' + (c.done === c.total ? ' is-complete' : '') + '" id="step-prog">' + c.done + '/' + c.total + '</span>' : '') +
+      '</div>' +
       '<div class="stepdetail__head">' +
-        '<span class="step__swatch step__swatch--lg" style="background:' + step.color + '"></span>' +
+        '<span class="stepdetail__swatch" style="background:' + step.color + ';color:' + textColorFor(step.color) + '">' + step.n + '</span>' +
         '<h1 class="stepdetail__title">' + esc(step.title) + '</h1>' +
       '</div>';
 
@@ -266,21 +300,34 @@
       html += '<div class="pending-note">Checklist content for this step is being added.</div>';
     } else {
       step.sections.forEach(function (sec) {
-        html += '<div class="section-card"><h2 class="section-card__title">' +
-          '<span class="section-card__code">' + esc(sec.code) + '</span><span class="step__bar">|</span>' + esc(sec.title) + '</h2>';
+        var sc = sectionCounts(step, sec);
+        html += '<div class="section-card">' +
+          '<div class="section-card__head">' +
+            '<h2 class="section-card__title"><span class="section-card__code">' + esc(sec.code) + '</span><span class="section-card__sep">|</span>' + esc(sec.title) + '</h2>' +
+            '<span class="section-card__prog' + (sc.done === sc.total ? ' is-complete' : '') + '" data-secprog="' + esc(sec.code) + '">' + sc.done + '/' + sc.total + '</span>' +
+          '</div>';
         sec.items.forEach(function (item, i) {
           var id = 'chk-' + step.n + '-' + sec.code.replace('.', '_') + '-' + i;
           html += '<label class="check" for="' + id + '">' +
-            '<input type="checkbox" id="' + id + '" data-step="' + step.n + '" data-code="' + esc(sec.code) + '" data-i="' + i + '"' +
-            (isChecked(step.n, sec.code, i) ? ' checked' : '') + ' />' +
-            '<span>' + (typeof item === 'string' ? esc(item) : item.html) + '</span></label>';
+            '<input type="checkbox" id="' + id + '" data-step="' + step.n + '" data-code="' + esc(sec.code) + '" data-i="' + i + '"' + (isChecked(step.n, sec.code, i) ? ' checked' : '') + ' />' +
+            '<span class="check__box" aria-hidden="true"></span>' +
+            '<span class="check__text">' + (typeof item === 'string' ? esc(item) : item.html) + '</span>' +
+          '</label>';
         });
         html += '</div>';
       });
       if (step.fieldRule) {
-        html += '<div class="fieldrule"><p class="fieldrule__title">⚠️ Field rule</p>' +
-          '<p class="fieldrule__body">' + esc(step.fieldRule) + '</p></div>';
+        html += '<div class="fieldrule"><p class="fieldrule__title"><span>&#9888;&#65039;</span> Field rule</p><p class="fieldrule__body">' + esc(step.fieldRule) + '</p></div>';
       }
+      var next = STEPS.filter(function (s) { return s.n === step.n + 1; })[0];
+      html += '<div class="stepnav">';
+      if (next) {
+        html += '<button class="btn btn--ghost stepnav__overview" id="overview-btn">Overview</button>' +
+                '<button class="btn btn--primary" id="next-btn">Next: ' + esc(next.title) + ' &#8594;</button>';
+      } else {
+        html += '<button class="btn btn--primary btn--block" id="overview-btn">Finish &#10003; · Back to overview</button>';
+      }
+      html += '</div>';
     }
 
     viewStep.innerHTML = html;
@@ -288,15 +335,32 @@
     viewLanding.hidden = true;
 
     document.getElementById('back-btn').addEventListener('click', showLanding);
+    var ov = document.getElementById('overview-btn'); if (ov) ov.addEventListener('click', showLanding);
+    var nx = document.getElementById('next-btn'); if (nx) nx.addEventListener('click', function () { showStep(step.n + 1); });
+
     Array.prototype.forEach.call(viewStep.querySelectorAll('input[type=checkbox]'), function (cb) {
       cb.addEventListener('change', function () {
         setChecked(+cb.getAttribute('data-step'), cb.getAttribute('data-code'), +cb.getAttribute('data-i'), cb.checked);
+        updateStepUI(step);
       });
     });
     window.scrollTo(0, 0);
   }
 
+  // Live-update the sticky progress pill + per-section pills as items are checked.
+  function updateStepUI(step) {
+    var c = stepCounts(step);
+    var hp = document.getElementById('step-prog');
+    if (hp) { hp.textContent = c.done + '/' + c.total; hp.classList.toggle('is-complete', c.done === c.total); }
+    step.sections.forEach(function (sec) {
+      var sc = sectionCounts(step, sec);
+      var el = viewStep.querySelector('[data-secprog="' + sec.code + '"]');
+      if (el) { el.textContent = sc.done + '/' + sc.total; el.classList.toggle('is-complete', sc.done === sc.total); }
+    });
+  }
+
   function showLanding() {
+    app.classList.remove('is-step');
     viewStep.hidden = true;
     viewStep.innerHTML = '';
     viewLanding.hidden = false;

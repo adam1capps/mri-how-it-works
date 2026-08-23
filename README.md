@@ -77,6 +77,37 @@ It's a static site with **no build step**, configured by `netlify.toml`
 
 Any other static host works too (Cloudflare Pages, GitHub Pages, S3, …).
 
+### Custom domain (guide.roof-mri.com)
+
+1. **Netlify → Domain management → Add a domain alias →** `guide.roof-mri.com`.
+2. **At whoever hosts DNS for `roof-mri.com`**, add a record for the `guide` host:
+   - `CNAME`  `guide`  →  `roof-mri-scanning.netlify.app`
+   - (If the DNS provider is Netlify DNS, step 1 creates this automatically.)
+3. Wait for propagation, then Netlify issues the free Let's Encrypt certificate.
+   Optionally set the alias as the **primary domain** so the `.netlify.app` URL
+   redirects to it.
+
+## Lead capture
+
+When someone accepts the terms, `js/gate.js` posts their details to a **Netlify
+Form** named `roof-mri-guide-lead` (the hidden detection form lives at the bottom
+of `index.html`). The post is fire-and-forget — if it fails, the contractor still
+gets straight into the guide.
+
+Captured per lead: name, email, terms acceptance, which guide, timestamp, page
+URL, plus an `ACTION-REQUIRED` line that spells out what to do with it.
+
+**One manual step — set the recipient (Netlify does not allow this from the repo):**
+
+> Netlify → **Forms** → `roof-mri-guide-lead` → **Settings & usage → Form
+> notifications → Add notification → Email notification** → send to
+> **`abby@re-dry.com`**.
+
+Submissions are also always visible in the Netlify **Forms** tab, so nothing is
+lost if the email is not set up yet. Later, point this at the Roof MRI App
+(`app.roof-mri.com`) directly by swapping the `fetch` in `captureLead()` for your
+API endpoint.
+
 ---
 
 ## Security / anti-sharing measures

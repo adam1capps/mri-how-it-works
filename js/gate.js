@@ -390,6 +390,38 @@
   } catch (e) {}
 
   /* ----------------------------------------------------------------------- */
+  /* Lead capture                                                            */
+  /* Posts the acknowledgement to a Netlify Form (see the hidden detection    */
+  /* form in index.html) so a lead notification email goes out. Fire-and-     */
+  /* forget: a failure here must never block access to the guide.            */
+  /* ----------------------------------------------------------------------- */
+  var LEAD_FORM = 'roof-mri-guide-lead';
+
+  function captureLead(identity) {
+    try {
+      if (!window.fetch || location.protocol === 'file:') return;
+      var data = {
+        'form-name': LEAD_FORM,
+        'ACTION-REQUIRED': 'NEW ROOF MRI LEAD — please add this person to the Roof MRI App (app.roof-mri.com).',
+        'lead-name': identity.name,
+        'lead-email': identity.email,
+        'agreed-to-terms': 'Yes — accepted the Terms of Use & Disclaimer',
+        'opened-guide': 'Roof MRI Quick Reference Guide',
+        'opened-at': new Date().toLocaleString(),
+        'page-url': location.href
+      };
+      var body = Object.keys(data).map(function (k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]);
+      }).join('&');
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body
+      })['catch'](function () {});
+    } catch (e) { /* never block the guide on lead capture */ }
+  }
+
+  /* ----------------------------------------------------------------------- */
   /* Gate form                                                               */
   /* ----------------------------------------------------------------------- */
   function showError(msg) { errorEl.textContent = msg; errorEl.hidden = false; }
@@ -405,6 +437,7 @@
       if (name.length < 2) { showError('Please enter your full name.'); return; }
       if (!EMAIL_RE.test(email)) { showError('Please enter a valid email address.'); return; }
       if (!agreed) { showError('You must read and agree to the terms to continue.'); return; }
+      captureLead({ name: name, email: email });
       unlock({ name: name, email: email }, true);
     });
   }

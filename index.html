@@ -169,5 +169,26 @@
   </div>
 
   <script src="js/gate.js"></script>
+
+  <!--
+    LEAD CAPTURE — hidden form so Netlify detects it at deploy time.
+    The visible gate form is JS-driven, so gate.js POSTs these fields to Netlify
+    in the background when someone accepts the terms. Field names below are what
+    appear as labels in the notification email, so they are written to read
+    clearly for a human recipient.
+    OWNER: the recipient (abby@re-dry.com) is set in the Netlify UI under
+    Forms -> Form notifications -> Email notification. See README.
+  -->
+  <form name="roof-mri-guide-lead" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="roof-mri-guide-lead" />
+    <input type="text" name="ACTION-REQUIRED" />
+    <input type="text" name="lead-name" />
+    <input type="email" name="lead-email" />
+    <input type="text" name="agreed-to-terms" />
+    <input type="text" name="opened-guide" />
+    <input type="text" name="opened-at" />
+    <input type="text" name="page-url" />
+    <input type="text" name="bot-field" />
+  </form>
 </body>
 </html>
